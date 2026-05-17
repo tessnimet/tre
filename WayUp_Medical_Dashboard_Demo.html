@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WayUp Medical — Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0D2137;
+    --blue: #1A5FA8;
+    --blue-mid: #2E75B6;
+    --blue-light: #4A9FE0;
+    --blue-pale: #E8F3FB;
+    --green: #0D9E6E;
+    --green-pale: #E6F7F2;
+    --red: #D63B3B;
+    --red-pale: #FDE8E8;
+    --orange: #E8850A;
+    --orange-pale: #FEF3E2;
+    --purple: #6C3FC5;
+    --purple-pale: #EFE9FB;
+    --white: #FFFFFF;
+    --bg: #F0F5FB;
+    --card: #FFFFFF;
+    --border: #D8E6F3;
+    --text: #0D2137;
+    --text-mid: #3A5A7A;
+    --text-light: #7A9AB8;
+    --shadow: 0 2px 16px rgba(13,33,55,0.08);
+    --shadow-lg: 0 8px 32px rgba(13,33,55,0.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 72px;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    gap: 8px;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    width: 44px; height: 44px;
+    background: var(--blue);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+
+  .nav-item {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s;
+    color: rgba(255,255,255,0.4);
+    position: relative;
+  }
+
+  .nav-item:hover, .nav-item.active {
+    background: rgba(255,255,255,0.12);
+    color: white;
+  }
+
+  .nav-item.active::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    width: 3px; height: 24px;
+    background: var(--blue-light);
+    border-radius: 2px;
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: 72px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .header-sub {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 1px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .filter-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .filter-select {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    cursor: pointer;
+    outline: none;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-green { background: var(--green-pale); color: var(--green); }
+  .badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* CONTENT */
+  .content {
+    padding: 28px 32px;
+    flex: 1;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+
+  /* KPI GRID */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .kpi-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 18px 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .kpi-card.blue::before { background: var(--blue); }
+  .kpi-card.green::before { background: var(--green); }
+  .kpi-card.red::before { background: var(--red); }
+  .kpi-card.orange::before { background: var(--orange); }
+  .kpi-card.purple::before { background: var(--purple); }
+  .kpi-card.navy::before { background: var(--navy); }
+
+  .kpi-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .kpi-card.blue .kpi-icon { background: var(--blue-pale); }
+  .kpi-card.green .kpi-icon { background: var(--green-pale); }
+  .kpi-card.red .kpi-icon { background: var(--red-pale); }
+  .kpi-card.orange .kpi-icon { background: var(--orange-pale); }
+  .kpi-card.purple .kpi-icon { background: var(--purple-pale); }
+  .kpi-card.navy .kpi-icon { background: var(--blue-pale); }
+
+  .kpi-value {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .kpi-label {
+    font-size: 11px;
+    color: var(--text-light);
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .kpi-trend {
+    position: absolute;
+    top: 18px; right: 14px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+
+  .trend-up { background: var(--green-pale); color: var(--green); }
+  .trend-down { background: var(--red-pale); color: var(--red); }
+
+  /* CHARTS GRID */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .charts-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .charts-grid-bottom {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .chart-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    transition: box-shadow 0.2s;
+  }
+
+  .chart-card:hover { box-shadow: var(--shadow-lg); }
+
+  .chart-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .chart-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .chart-sub {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  .chart-tag {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--blue-pale);
+    color: var(--blue);
+  }
+
+  .chart-container {
+    position: relative;
+    height: 180px;
+  }
+
+  .chart-container.tall { height: 220px; }
+  .chart-container.short { height: 150px; }
+
+  /* TABLE */
+  .table-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    margin-top: 12px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    background: var(--navy);
+    color: white;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: left;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  thead th:first-child { border-radius: 8px 0 0 0; }
+  thead th:last-child { border-radius: 0 8px 0 0; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--bg);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: var(--blue-pale); }
+
+  tbody td {
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .s-ok { background: var(--green-pale); color: var(--green); }
+  .s-alert { background: var(--orange-pale); color: var(--orange); }
+  .s-danger { background: var(--red-pale); color: var(--red); }
+
+  /* HORIZONTAL BAR */
+  .hbar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .hbar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hbar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hbar-label {
+    font-size: 11px;
+    color: var(--text-mid);
+    font-weight: 500;
+  }
+
+  .hbar-val {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .hbar-track {
+    height: 6px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .hbar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+
+  /* ALERT BANNER */
+  .alert-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--red-pale);
+    border: 1px solid #F5C0C0;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  /* ANIMATE */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .kpi-card { animation: fadeUp 0.4s ease both; }
+  .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+  .kpi-card:nth-child(2) { animation-delay: 0.10s; }
+  .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+  .kpi-card:nth-child(4) { animation-delay: 0.20s; }
+  .kpi-card:nth-child(5) { animation-delay: 0.25s; }
+  .kpi-card:nth-child(6) { animation-delay: 0.30s; }
+  .chart-card { animation: fadeUp 0.5s ease both; animation-delay: 0.3s; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 4px 0 20px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">🏥</div>
+  <div class="nav-item active" title="Dashboard">📊</div>
+  <div class="nav-item" title="Patients">👥</div>
+  <div class="nav-item" title="Médecins">🩺</div>
+  <div class="nav-item" title="RDV">📅</div>
+  <div class="nav-item" title="Pharmacie">💊</div>
+  <div class="nav-item" title="Facturation">💰</div>
+  <div class="nav-item" title="Rapports" style="margin-top:auto">📋</div>
+  <div class="nav-item" title="Paramètres">⚙️</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-title">🏥 WayUp Medical — Tableau de Bord</div>
+      <div class="header-sub">Plateforme médicale multi-tenant · Données en temps réel</div>
+    </div>
+    <div class="header-right">
+      <div class="filter-group">
+        <span class="filter-label">Clinique</span>
+        <select class="filter-select">
+          <option>Toutes les cliniques</option>
+          <option>Clinique Al Waha</option>
+          <option>Clinique Ibn Sina</option>
+          <option>Clinique Avicenne</option>
+        </select>
+        <span class="filter-label">Période</span>
+        <select class="filter-select">
+          <option>Ce mois</option>
+          <option>Cette semaine</option>
+          <option>Cette année</option>
+        </select>
+      </div>
+      <div class="badge badge-green">
+        <span class="badge-dot"></span>
+        Système actif
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ALERT -->
+    <div class="alert-banner">
+      ⚠️ 3 médicaments en rupture de stock · 2 urgences actives en cours · CA en attente : 12 450 DT
+    </div>
+
+    <!-- KPI SECTION -->
+    <div class="section-title">Indicateurs clés</div>
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-trend trend-up">↑ 8%</div>
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-value">1 248</div>
+        <div class="kpi-label">Patients actifs</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-trend trend-up">↑ 12%</div>
+        <div class="kpi-icon">📅</div>
+        <div class="kpi-value">342</div>
+        <div class="kpi-label">RDV ce mois</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-trend trend-down">↑ 3%</div>
+        <div class="kpi-icon">🚨</div>
+        <div class="kpi-value">14</div>
+        <div class="kpi-label">Urgences actives</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-trend trend-up">↑ 5%</div>
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-value">87.4k</div>
+        <div class="kpi-label">CA encaissé (DT)</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-icon">🛏️</div>
+        <div class="kpi-value">68%</div>
+        <div class="kpi-label">Taux occupation</div>
+      </div>
+      <div class="kpi-card navy">
+        <div class="kpi-icon">🩺</div>
+        <div class="kpi-value">38</div>
+        <div class="kpi-label">Médecins actifs</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ROW 1: Line + Donut + Horizontal bars -->
+    <div class="section-title">Activité & Répartition</div>
+    <div class="charts-grid">
+
+      <!-- Line chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Évolution des RDV par mois</div>
+            <div class="chart-sub">12 derniers mois · toutes cliniques</div>
+          </div>
+          <span class="chart-tag">Tendance</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Donut -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">RDV par statut</div>
+            <div class="chart-sub">Distribution actuelle</div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="donutChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Horizontal bars -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Consultations par médecin</div>
+            <div class="chart-sub">Top 5 ce mois</div>
+          </div>
+        </div>
+        <div class="hbar-list" style="margin-top:16px">
+          <div class="hbar-item">
+            <div class="hbar-top"><span class="hbar-label">Dr. Benali A.</span><span class="hbar-val">48</span></div>
+            <div class="hbar-track"><div class="hbar-fill" style="width:96%;background:#1A5FA8"></div></div>
+          </div>
+          <div class="hbar-item">
+            <div class="hbar-top"><span class="hbar-label">Dr. Mansouri K.</span><span class="hbar-val">41</span></div>
+            <div class="hbar-track"><div class="hbar-fill" style="width:82%;background:#2E75B6"></div></div>
+          </div>
+          <div class="hbar-item">
+            <div class="hbar-top"><span class="hbar-label">Dr. Ferhat S.</span><span class="hbar-val">36</span></div>
+            <div class="hbar-track"><div class="hbar-fill" style="width:72%;background:#4A9FE0"></div></div>
+          </div>
+          <div class="hbar-item">
+            <div class="hbar-top"><span class="hbar-label">Dr. Amrani L.</span><span class="hbar-val">29</span></div>
+            <div class="hbar-track"><div class="hbar-fill" style="width:58%;background:#0D9E6E"></div></div>
+          </div>
+          <div class="hbar-item">
+            <div class="hbar-top"><span class="hbar-label">Dr. Kadri M.</span><span class="hbar-val">22</span></div>
+            <div class="hbar-track"><div class="hbar-fill" style="width:44%;background:#6C3FC5"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: 3 bar charts -->
+    <div class="charts-grid-2">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Patients actifs par clinique</div>
+            <div class="chart-sub">Comparaison multi-site</div>
+          </div>
+        </div>
+        <div class="chart-container short">
+          <canvas id="barClinic"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">CA par clinique (DT)</div>
+            <div class="chart-sub">Encaissé vs En attente</div>
+          </div>
+        </div>
+        <div class="chart-container short">
+          <canvas id="barCA"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">RDV par jour de semaine</div>
+            <div class="chart-sub">Charge hebdomadaire</div>
+          </div>
+        </div>
+        <div class="chart-container short">
+          <canvas id="barDay"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: Table + Occupation -->
+    <div class="charts-grid-bottom">
+
+      <!-- Pharmacie table -->
+      <div class="table-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">💊 Stock Pharmacie — Alertes</div>
+            <div class="chart-sub">Médicaments nécessitant attention</div>
+          </div>
+          <span class="chart-tag" style="background:var(--red-pale);color:var(--red)">3 critiques</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Médicament</th>
+                <th>Catégorie</th>
+                <th>Stock</th>
+                <th>Seuil</th>
+                <th>Statut</th>
+                <th>Expiration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Amoxicilline 500mg</strong></td>
+                <td>Antibiotique</td>
+                <td>0</td>
+                <td>50</td>
+                <td><span class="status-badge s-danger">● RUPTURE</span></td>
+                <td>2026-08-15</td>
+              </tr>
+              <tr>
+                <td><strong>Ibuprofène 400mg</strong></td>
+                <td>Analgésique</td>
+                <td>12</td>
+                <td>30</td>
+                <td><span class="status-badge s-alert">⚠ ALERTE</span></td>
+                <td>2026-11-20</td>
+              </tr>
+              <tr>
+                <td><strong>Metformine 850mg</strong></td>
+                <td>Antidiabétique</td>
+                <td>0</td>
+                <td>40</td>
+                <td><span class="status-badge s-danger">● RUPTURE</span></td>
+                <td>2027-03-10</td>
+              </tr>
+              <tr>
+                <td><strong>Oméprazole 20mg</strong></td>
+                <td>Gastrique</td>
+                <td>18</td>
+                <td>25</td>
+                <td><span class="status-badge s-alert">⚠ ALERTE</span></td>
+                <td>2026-09-05</td>
+              </tr>
+              <tr>
+                <td><strong>Paracétamol 1g</strong></td>
+                <td>Analgésique</td>
+                <td>145</td>
+                <td>50</td>
+                <td><span class="status-badge s-ok">✓ OK</span></td>
+                <td>2027-06-30</td>
+              </tr>
+              <tr>
+                <td><strong>Amlodipine 5mg</strong></td>
+                <td>Cardiologie</td>
+                <td>0</td>
+                <td>20</td>
+                <td><span class="status-badge s-danger">● RUPTURE</span></td>
+                <td>2026-12-01</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Occupation + Specialisation -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="chart-card" style="flex:1">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Taux occupation chambres</div>
+              <div class="chart-sub">Par service</div>
+            </div>
+          </div>
+          <div class="hbar-list">
+            <div class="hbar-item">
+              <div class="hbar-top"><span class="hbar-label">Urgences</span><span class="hbar-val" style="color:var(--red)">92%</span></div>
+              <div class="hbar-track"><div class="hbar-fill" style="width:92%;background:#D63B3B"></div></div>
+            </div>
+            <div class="hbar-item">
+              <div class="hbar-top"><span class="hbar-label">Soins Intensifs</span><span class="hbar-val" style="color:var(--orange)">78%</span></div>
+              <div class="hbar-track"><div class="hbar-fill" style="width:78%;background:#E8850A"></div></div>
+            </div>
+            <div class="hbar-item">
+              <div class="hbar-top"><span class="hbar-label">Chirurgie</span><span class="hbar-val">64%</span></div>
+              <div class="hbar-track"><div class="hbar-fill" style="width:64%;background:#2E75B6"></div></div>
+            </div>
+            <div class="hbar-item">
+              <div class="hbar-top"><span class="hbar-label">Pédiatrie</span><span class="hbar-val" style="color:var(--green)">45%</span></div>
+              <div class="hbar-track"><div class="hbar-fill" style="width:45%;background:#0D9E6E"></div></div>
+            </div>
+            <div class="hbar-item">
+              <div class="hbar-top"><span class="hbar-label">Médecine Générale</span><span class="hbar-val" style="color:var(--green)">38%</span></div>
+              <div class="hbar-track"><div class="hbar-fill" style="width:38%;background:#0D9E6E"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card" style="flex:1">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">Médecins par spécialisation</div>
+            </div>
+          </div>
+          <div class="chart-container short">
+            <canvas id="donutSpec"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const COLORS = {
+  navy: '#0D2137', blue: '#1A5FA8', blueMid: '#2E75B6',
+  blueLight: '#4A9FE0', green: '#0D9E6E', red: '#D63B3B',
+  orange: '#E8850A', purple: '#6C3FC5', teal: '#16A085'
+};
+
+const defaultOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      labels: { font: { family: 'DM Sans', size: 11 }, color: '#3A5A7A', padding: 12 }
+    },
+    tooltip: {
+      backgroundColor: '#0D2137',
+      titleFont: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
+      bodyFont: { family: 'DM Sans', size: 11 },
+      padding: 10,
+      cornerRadius: 8
+    }
+  }
+};
+
+// LINE CHART
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: {
+    labels: ['Juin','Juil','Août','Sep','Oct','Nov','Déc','Jan','Fév','Mar','Avr','Mai'],
+    datasets: [{
+      label: 'RDV',
+      data: [210,245,189,267,298,312,278,334,289,356,321,342],
+      borderColor: COLORS.blue,
+      backgroundColor: 'rgba(26,95,168,0.08)',
+      borderWidth: 2.5,
+      pointBackgroundColor: COLORS.blue,
+      pointRadius: 3,
+      pointHoverRadius: 6,
+      tension: 0.4,
+      fill: true
+    }]
+  },
+  options: {
+    ...defaultOpts,
+    plugins: { ...defaultOpts.plugins, legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#7A9AB8' } },
+      y: { grid: { color: '#F0F5FB' }, ticks: { font: { size: 10 }, color: '#7A9AB8' } }
+    }
+  }
+});
+
+// DONUT RDV STATUT
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Approuvé', 'En attente', 'Terminé', 'Annulé'],
+    datasets: [{
+      data: [42, 18, 28, 12],
+      backgroundColor: [COLORS.green, COLORS.orange, COLORS.blue, COLORS.red],
+      borderWidth: 0,
+      hoverOffset: 6
+    }]
+  },
+  options: {
+    ...defaultOpts,
+    cutout: '72%',
+    plugins: {
+      ...defaultOpts.plugins,
+      legend: {
+        position: 'bottom',
+        labels: { font: { family: 'DM Sans', size: 10 }, color: '#3A5A7A', padding: 8, boxWidth: 10 }
+      }
+    }
+  }
+});
+
+// BAR CLINIQUE
+new Chart(document.getElementById('barClinic'), {
+  type: 'bar',
+  data: {
+    labels: ['Al Waha', 'Ibn Sina', 'Avicenne'],
+    datasets: [{
+      label: 'Patients actifs',
+      data: [487, 412, 349],
+      backgroundColor: [COLORS.blue, COLORS.blueMid, COLORS.blueLight],
+      borderRadius: 6,
+      borderSkipped: false
+    }]
+  },
+  options: {
+    ...defaultOpts,
+    plugins: { ...defaultOpts.plugins, legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#7A9AB8' } },
+      y: { grid: { color: '#F0F5FB' }, ticks: { font: { size: 10 }, color: '#7A9AB8' } }
+    }
+  }
+});
+
+// BAR CA
+new Chart(document.getElementById('barCA'), {
+  type: 'bar',
+  data: {
+    labels: ['Al Waha', 'Ibn Sina', 'Avicenne'],
+    datasets: [
+      {
+        label: 'Encaissé',
+        data: [34200, 28900, 24300],
+        backgroundColor: COLORS.green,
+        borderRadius: 6,
+        borderSkipped: false
+      },
+      {
+        label: 'En attente',
+        data: [5400, 4200, 2850],
+        backgroundColor: COLORS.orange,
+        borderRadius: 6,
+        borderSkipped: false
+      }
+    ]
+  },
+  options: {
+    ...defaultOpts,
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#7A9AB8' } },
+      y: { grid: { color: '#F0F5FB' }, ticks: { font: { size: 10 }, color: '#7A9AB8' } }
+    }
+  }
+});
+
+// BAR DAY
+new Chart(document.getElementById('barDay'), {
+  type: 'bar',
+  data: {
+    labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+    datasets: [{
+      label: 'RDV',
+      data: [68, 72, 58, 81, 65, 42],
+      backgroundColor: (ctx) => {
+        const v = ctx.raw;
+        if (v >= 80) return COLORS.red;
+        if (v >= 65) return COLORS.orange;
+        return COLORS.blue;
+      },
+      borderRadius: 6,
+      borderSkipped: false
+    }]
+  },
+  options: {
+    ...defaultOpts,
+    plugins: { ...defaultOpts.plugins, legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#7A9AB8' } },
+      y: { grid: { color: '#F0F5FB' }, ticks: { font: { size: 10 }, color: '#7A9AB8' } }
+    }
+  }
+});
+
+// DONUT SPECIALISATION
+new Chart(document.getElementById('donutSpec'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Généraliste', 'Cardiologue', 'Pédiatre', 'Chirurgien', 'Autre'],
+    datasets: [{
+      data: [12, 7, 6, 8, 5],
+      backgroundColor: [COLORS.blue, COLORS.red, COLORS.green, COLORS.purple, COLORS.orange],
+      borderWidth: 0,
+      hoverOffset: 6
+    }]
+  },
+  options: {
+    ...defaultOpts,
+    cutout: '68%',
+    plugins: {
+      ...defaultOpts.plugins,
+      legend: {
+        position: 'right',
+        labels: { font: { family: 'DM Sans', size: 9 }, color: '#3A5A7A', padding: 6, boxWidth: 8 }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
