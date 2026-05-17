@@ -1,0 +1,204 @@
+{
+  "name": "WayUp Medical",
+  "dataColors": [
+    "#1A5FA8",
+    "#0D9E6E",
+    "#E8850A",
+    "#D63B3B",
+    "#6C3FC5",
+    "#2E75B6",
+    "#4A9FE0",
+    "#0D2137"
+  ],
+  "background": {
+    "color": "#F0F5FB"
+  },
+  "foreground": {
+    "color": "#0D2137"
+  },
+  "tableAccent": {
+    "color": "#1A5FA8"
+  },
+  "firstLevelElements": "#7A9AB8",
+  "secondLevelElements": "#3A5A7A",
+  "text": {
+    "color": "#0D2137",
+    "fontFace": "DM Sans"
+  },
+  "visualStyles": {
+    "*.visual": {
+      "outline": {
+        "show": true,
+        "color": "#D8E6F3",
+        "weight": 1
+      },
+      "shadow": {
+        "show": true
+      }
+    },
+    "areaChart": {
+      "*": {
+        "series": {
+          "dataPoint": {
+            "defaultColor": {
+              "fill": {
+                "color": "#1A5FA8"
+              }
+            }
+          }
+        },
+        "xAxisReferenceLine": {
+          "line": {
+            "color": "#D8E6F3"
+          }
+        },
+        "yAxisReferenceLine": {
+          "line": {
+            "color": "#D8E6F3"
+          }
+        }
+      }
+    },
+    "barChart": {
+      "*": {
+        "dataPoint": {
+          "defaultColor": {
+            "fill": {
+              "color": "#1A5FA8"
+            }
+          }
+        }
+      }
+    },
+    "lineChart": {
+      "*": {
+        "series": {
+          "line": {
+            "strokeWidth": 2.5
+          },
+          "point": {
+            "show": true,
+            "radius": 3
+          }
+        }
+      }
+    },
+    "columnChart": {
+      "*": {
+        "dataPoint": {
+          "defaultColor": {
+            "fill": {
+              "color": "#1A5FA8"
+            }
+          }
+        }
+      }
+    },
+    "pieChart": {
+      "*": {
+        "dataPoint": {
+          "defaultColor": {
+            "fill": {
+              "color": "#1A5FA8"
+            }
+          }
+        }
+      }
+    },
+    "donutChart": {
+      "*": {
+        "dataPoint": {
+          "defaultColor": {
+            "fill": {
+              "color": "#1A5FA8"
+            }
+          }
+        }
+      }
+    },
+    "scatterChart": {
+      "*": {
+        "dataPoint": {
+          "defaultColor": {
+            "fill": {
+              "color": "#1A5FA8"
+            }
+          }
+        }
+      }
+    },
+    "waterfall": {
+      "*": {
+        "dataPoint": {
+          "defaultColor": {
+            "fill": {
+              "color": "#1A5FA8"
+            }
+          }
+        }
+      }
+    },
+    "table": {
+      "*": {
+        "grid": {
+          "outlineColor": {
+            "color": "#D8E6F3"
+          }
+        },
+        "tableStyle": {
+          "theme": "DarkStyle"
+        }
+      }
+    },
+    "matrix": {
+      "*": {
+        "grid": {
+          "outlineColor": {
+            "color": "#D8E6F3"
+          }
+        }
+      }
+    },
+    "textbox": {
+      "*": {
+        "textbox": {
+          "fontColor": {
+            "color": "#0D2137"
+          }
+        }
+      }
+    },
+    "card": {
+      "*": {
+        "cardCalloutValue": {
+          "fontSize": 26,
+          "fontColor": {
+            "color": "#0D2137"
+          }
+        }
+      }
+    },
+    "gauge": {
+      "*": {
+        "dataPoint": {
+          "defaultColor": {
+            "fill": {
+              "color": "#1A5FA8"
+            }
+          }
+        }
+      }
+    },
+    "funnelChart": {
+      "*": {
+        "dataPoint": {
+          "defaultColor": {
+            "fill": {
+              "color": "#1A5FA8"
+            }
+          }
+        }
+      }
+    }
+  }
+}
